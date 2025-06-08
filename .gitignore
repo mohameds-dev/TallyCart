@@ -2,3 +2,5 @@
 data
 # script for some local machine setup
 link_venv_to_ssd.sh
+__pycache__/
+.env
