@@ -1,4 +1,4 @@
-def create_prompt(ocr_text):
+def create_prompt_to_parse_ocr_text(ocr_text):
     return """
 SYSTEM:
 You are a receipt parser. Given raw OCR text from a grocery receipt, return only a valid JSON object with:
@@ -46,3 +46,30 @@ Expected JSON:
 Now parse:
 
 """ + ocr_text
+
+def create_prompt_to_revise_scanned_receipt(ocr_text, parsed_data_string):
+    return f"""
+SYSTEM:
+You are revising the scanned receipt data as part of a receipt parsing pipeline.
+
+You are given:
+- The original OCR text
+- The parsed data from the OCR text
+
+You need to revise the parsed data to correct any errors or omissions. Look out for:
+
+- Missing items
+- Incorrect item quantities
+- Incorrect item prices (like $6.00 instead of 56.00 or S5.00)
+- Incorrect item units (like "lb" instead of "Ib")
+
+Your output should be a valid JSON object. No explanations, no other text.
+
+Here is the original OCR text:
+{ocr_text}
+
+Here is the parsed data:
+{parsed_data_string}
+
+Your revised data:
+"""
