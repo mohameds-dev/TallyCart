@@ -1,7 +1,6 @@
 import os
 import tkinter as tk
 from tkinter import filedialog
-import cv2
 from image_processor.preprocessor import load_image, resize_image, save_image
 from image_processor.content_reader import read_image_content
 from llm.prompt_provider import create_prompt_to_parse_ocr_text, create_prompt_to_revise_scanned_receipt

@@ -21,3 +21,6 @@ def preprocess_image(image):
     enhanced = clahe.apply(gray)
 
     return enhanced
+
+def save_image(image, path):
+    cv2.imwrite(path, image)
