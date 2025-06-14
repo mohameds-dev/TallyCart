@@ -5,3 +5,9 @@ link_venv_to_ssd.sh
 __pycache__/
 .env
 db.sqlite3
+*.pyc
+*.pyo
+*.pyd
+*.pyw
+*.pyz
+.fuse_hidden*
