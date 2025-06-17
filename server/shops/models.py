@@ -11,8 +11,6 @@ class Shop(models.Model):
     latitude = models.DecimalField(max_digits=10, decimal_places=8, null=True)
     longitude = models.DecimalField(max_digits=10, decimal_places=8, null=True)
 
-    class Meta:
-        db_table = 'shops'
 
     def __str__(self):
-        return f"{self.name}{(f' at {self.address}') if self.address else ''}"
+        return f"{self.name}{(f' AT {self.address}') if self.address else ''}{f' - {self.url}' if self.url else ''}"
