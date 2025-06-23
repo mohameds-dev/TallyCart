@@ -27,6 +27,17 @@ class Command(BaseCommand):
     """
     help = 'Load products data from a CSV file into the database'
 
+    # Map internal field names to CSV column names
+    CSV_FIELD_MAP = {
+        'product_name': 'product_name',
+        'store_product_id': 'store_product_id',
+        'store_name': 'store_name',
+        'store_location': 'store_location',
+        'date': 'date',
+        'unit': 'unit',
+        'unit_price': 'unit_price',
+    }
+
     def add_arguments(self, parser):
         parser.add_argument(
             'csv_file',
@@ -99,14 +110,22 @@ class Command(BaseCommand):
         Validates a single row, parses its data, and returns a structured dictionary and skip reason.
         Prints details if the row is invalid or missing data.
         """
-        required_fields = ['item_name', 'unit_price']
-        missing_fields = [field for field in required_fields if not row.get(field, '').strip()]
-        item_name = row.get('item_name', '').strip()
-        unit_price_str = row.get('unit_price', '').strip()
+        field_map = self.CSV_FIELD_MAP
+        required_fields = ['product_name', 'unit_price']
+        missing_fields = [field for field in required_fields if not row.get(field_map[field], '').strip()]
+        product_name = row.get(field_map['product_name'], '').strip()
+        unit_price_str = row.get(field_map['unit_price'], '').strip()
+        unit_value = row.get(field_map['unit'], 'unit').strip()
 
         if missing_fields:
             self.stdout.write(self.style.WARNING(
-                f"Skipping row {row_num}: missing data in fields {missing_fields}\nRow content: {row}"
+                f"Skipping row {row_num}: missing data in fields {missing_fields}\nRow content: {str(row)[:70]}..."
+            ))
+            return None, 'missing_data'
+
+        if unit_value.lower() == 'tbd':
+            self.stdout.write(self.style.WARNING(
+                f"Skipping row {row_num}: unit is 'TBD' (data not filled)\nRow content: {str(row)[:70]}..."
             ))
             return None, 'missing_data'
 
@@ -114,26 +133,26 @@ class Command(BaseCommand):
             unit_price = Decimal(unit_price_str.replace('$', '').replace(',', ''))
         except Exception:
             self.stdout.write(self.style.WARNING(
-                f"Skipping row {row_num}: invalid unit_price value '{unit_price_str}'\nRow content: {row}"
+                f"Skipping row {row_num}: invalid unit_price value '{unit_price_str}'\nRow content: {str(row)[:70]}..."
             ))
             return None, 'invalid'
         
-        date_str = row.get('date', '').strip()
+        date_str = row.get(field_map['date'], '').strip()
         try:
             snapshot_date = self._parse_date(date_str)
         except Exception:
             self.stdout.write(self.style.WARNING(
-                f"Skipping row {row_num}: invalid date value '{date_str}'\nRow content: {row}"
+                f"Skipping row {row_num}: invalid date value '{date_str}'\nRow content: {str(row)[:70]}..."
             ))
             return None, 'invalid'
 
         return ({
-            'item_name': item_name,
-            'store_item_id': row.get('store_item_id', '').strip(),
-            'store_name': row.get('store_name', '').strip(),
-            'store_location': row.get('store_location', '').strip(),
+            'product_name': product_name,
+            'store_product_id': row.get(field_map['store_product_id'], '').strip(),
+            'store_name': row.get(field_map['store_name'], '').strip(),
+            'store_location': row.get(field_map['store_location'], '').strip(),
             'date': snapshot_date,
-            'unit': row.get('unit', 'unit').strip(),
+            'unit': unit_value,
             'unit_price': unit_price
         }, None)
 
@@ -180,13 +199,13 @@ class Command(BaseCommand):
     def _get_or_create_product(self, data, stats):
         """Gets or creates a Product."""
         try:
-            product = Product.objects.get(name=data['item_name'])
+            product = Product.objects.get(name=data['product_name'])
             stats['products_skipped'] += 1
         except Product.DoesNotExist:
             product = self._create_object(
                 Product,
-                name=data['item_name'],
-                store_product_id=data['store_item_id'] or None
+                name=data['product_name'],
+                store_product_id=data['store_product_id'] or None
             )
             stats['products_created'] += 1
         return product
