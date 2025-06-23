@@ -8,26 +8,27 @@ class Tag(models.Model):
     def __str__(self):
         return self.name
 
-class Item(models.Model):
+class Product(models.Model):
     name = models.CharField(max_length=255, unique=True)
-    tags = models.ManyToManyField(Tag, through='ItemTag', related_name='items')
+    store_product_id = models.CharField(max_length=255, blank=True, null=True, help_text="Optional store-specific product ID")
+    tags = models.ManyToManyField(Tag, through='ProductTag', related_name='products')
 
     def __str__(self):
         return self.name[:50]
 
-class ItemTag(models.Model):
-    item = models.ForeignKey(Item, on_delete=models.CASCADE)
+class ProductTag(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
     tag = models.ForeignKey(Tag, on_delete=models.CASCADE)
 
     class Meta:
-        unique_together = ('item', 'tag')
+        unique_together = ('product', 'tag')
 
     def __str__(self):
-        return f"{self.item} - TAGGED: {self.tag}"
+        return f"{self.product} - TAGGED: {self.tag}"
 
 
 class PriceSnapshot(models.Model):
-    item = models.ForeignKey(Item, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
     date = models.DateField(default=timezone.now)
     unit = models.CharField(max_length=255, default="unit")
     unit_price = models.DecimalField(max_digits=10, decimal_places=2)
@@ -36,11 +37,11 @@ class PriceSnapshot(models.Model):
     shop = models.ForeignKey(Shop, on_delete=models.SET_NULL, null=True)
 
     class Meta:
-        unique_together = ('item', 'date', 'shop', 'unit')
+        unique_together = ('product', 'date', 'shop', 'unit')
         ordering = ['-date']
         indexes = [
-            models.Index(fields=['item', 'date']),
+            models.Index(fields=['product', 'date']),
         ]
 
     def __str__(self):
-        return f"{self.item} - FOR {self.unit_price:.2f} {self.currency} / {self.unit} - ON {self.date} {f'FROM {self.shop}' if self.shop else ''}"
+        return f"{self.product} - FOR {self.unit_price:.2f} {self.currency} / {self.unit} - ON {self.date} {f'FROM {self.shop}' if self.shop else ''}"
