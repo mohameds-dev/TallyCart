@@ -20,15 +20,11 @@ class Command(BaseCommand):
     The process is separated into two main phases for each row:
     1.  **Validation and Cleaning**: Each row is validated for essential data
         and cleaned (e.g., parsing dates and decimals).
-    2.  **Database Loading**: Validated data is used to create or retrieve
+    2.  **Database Loading**: Validated data is used to create or update
         database records.
-
-    This separation ensures that the database logic is clean and operates on
-    predictable data, making the process more testable and maintainable.
     """
     help = 'Load products data from a CSV file into the database'
 
-    # Map internal field names to CSV column names
     CSV_FIELD_MAP = {
         'product_name': 'product_name',
         'store_product_id': 'store_product_id',
