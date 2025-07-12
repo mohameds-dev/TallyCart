@@ -13,21 +13,13 @@ class Command(BaseCommand):
             type=str,
             help='Path to the CSV file containing products data'
         )
-        parser.add_argument(
-            '--dry-run',
-            action='store_true',
-            help='Show what would be created without actually creating records'
-        )
 
     def handle(self, *args, **options):
         csv_file_path = options['csv_file']
-        # self.is_dry_run = options['dry_run']
 
         if not os.path.exists(csv_file_path):
             raise CommandError(f'CSV file not found: {csv_file_path}')
 
-        # if self.is_dry_run:
-        #     self.stdout.write(self.style.WARNING('DRY RUN MODE - No records will be created'))
 
         with open(csv_file_path, 'r') as file:
             reader = csv.DictReader(file)
