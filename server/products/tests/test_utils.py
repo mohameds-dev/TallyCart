@@ -28,4 +28,18 @@ class TestUnitValidator(TestCase):
         self.assertEqual(validate_unit('gal'), None)
 
     def test_unit_validator_accepts_unit_of_ea(self):
-        self.assertEqual(validate_unit('ea'), None)
+        self.assertEqual(validate_unit('ea'), None)   
+
+    def test_unit_validator_accepts_unit_of_g(self):
+        self.assertEqual(validate_unit('g'), None)
+
+    def test_unit_validator_accepts_unit_of_kg(self):
+        self.assertEqual(validate_unit('kg'), None)
+
+    def test_unit_validator_accepts_unit_of_ml(self):
+        self.assertEqual(validate_unit('ml'), None)
+
+    def test_unit_validator_accepts_unit_of_l(self):
+        self.assertEqual(validate_unit('l'), None)
+
+

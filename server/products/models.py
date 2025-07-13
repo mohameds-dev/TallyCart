@@ -10,7 +10,6 @@ class Tag(models.Model):
 
 class Product(models.Model):
     name = models.CharField(max_length=255, unique=True)
-    store_product_id = models.CharField(max_length=255, blank=True, null=True, help_text="Optional store-specific product ID")
     tags = models.ManyToManyField(Tag, through='ProductTag', related_name='products')
 
     def __str__(self):
@@ -29,6 +28,7 @@ class ProductTag(models.Model):
 
 class PriceSnapshot(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    store_product_id = models.CharField(max_length=255, blank=True, null=True, help_text="Optional store-specific product ID")
     date = models.DateField(default=timezone.now)
     unit = models.CharField(max_length=255, default="unit")
     unit_price = models.DecimalField(max_digits=10, decimal_places=2)
@@ -37,7 +37,7 @@ class PriceSnapshot(models.Model):
     shop = models.ForeignKey(Shop, on_delete=models.SET_NULL, null=True)
 
     class Meta:
-        unique_together = ('product', 'date', 'shop', 'unit')
+        unique_together = ('product', 'date', 'unit', 'unit_price', 'currency')
         ordering = ['-date']
         indexes = [
             models.Index(fields=['product', 'date']),

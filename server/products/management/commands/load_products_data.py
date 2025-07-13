@@ -24,13 +24,12 @@ class Command(BaseCommand):
 
         with open(csv_file_path, 'r') as file:
             reader = csv.DictReader(file)
-            row_index = 2
-            for row in enumerate(reader, start=2):
+            for row_index, row_data in enumerate(reader, start=2):
                 try:
-                    self.process_row(row)
-                    row_index += 1
+                    self.process_row(row_data)
+                    self.stdout.write(f'Processed row {row_index}.')
                 except Exception as e:
-                    self.stderr.write(f'Skipping row {row_index}: {e}')
+                    self.stderr.write(f'Skipped row {row_index}: {e}')
 
     def process_row(self, row):
         serializer = CSVRowSerializer(data=row)

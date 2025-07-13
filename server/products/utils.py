@@ -7,5 +7,5 @@ def convert_price_to_float(price_string):
     return float(price_string.replace('$', ''))
 
 def validate_unit(unit):
-    if unit not in ['lb', 'oz', 'gal', 'ea']:
+    if unit not in ['lb', 'oz', 'gal', 'ea', 'g', 'kg', 'ml', 'l']:
         raise ValueError(f"Invalid unit: {unit}")
