@@ -4,7 +4,7 @@ from datetime import datetime
 from django.utils import timezone
 from .models import Product, Tag, PriceSnapshot
 from shops.models import Shop
-
+from .utils import format_date, convert_price_to_float, validate_unit
 
 class CSVRowSerializer(serializers.Serializer):
     store_product_id = serializers.CharField(required=False, allow_blank=True)
@@ -28,29 +28,22 @@ class CSVRowSerializer(serializers.Serializer):
         PriceSnapshot.objects.create(
             product=product,
             shop=Shop.objects.get_or_create(name=validated_data['store_name'], address=validated_data['store_location'])[0],
-            date=self._format_date(validated_data['date']),
+            date=format_date(validated_data['date']),
             unit=validated_data['unit'],
-            unit_price=self._convert_price_to_float(validated_data['unit_price']),
+            unit_price=convert_price_to_float(validated_data['unit_price']),
         )
 
         return product
     
     def validate(self, attrs):
-        self._validate_unit(attrs['unit'])
+        try:    
+            validate_unit(attrs['unit'])
+        except ValueError as e:
+            raise serializers.ValidationError(e)
         return attrs
 
     def _create_tags(self, validated_data):
         return [Tag.objects.get_or_create(name=tag_name)[0] for tag_name in validated_data.pop('tags').split(' ')]
-
-    def _format_date(self, date_string):
-        return datetime.strptime(date_string, '%m/%d/%Y')
-    
-    def _convert_price_to_float(self, price_string):
-        return float(price_string.replace('$', ''))
-
-    def _validate_unit(self, unit):
-        if unit == 'some invalid unit':
-            raise serializers.ValidationError(f"Invalid unit: {unit}")
 
 
 class ProductSerializer(serializers.ModelSerializer):

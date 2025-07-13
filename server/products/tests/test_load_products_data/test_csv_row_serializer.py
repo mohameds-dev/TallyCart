@@ -62,12 +62,6 @@ class CSVRowSerializerTest(TestCase):
 
         self.assertEqual(Product.objects.count(), 1)
 
-    def test_date_formatter_converts_csv_date_to_date_object(self):
-        self.assertEqual(CSVRowSerializer()._format_date('2/20/2025'), datetime.strptime('2025-02-20', '%Y-%m-%d'))
-
-    def test_price_formatter_converts_csv_price_to_float(self):
-        self.assertEqual(CSVRowSerializer()._convert_price_to_float('$1.49'), 1.49)
-
     def test_unit_validator_raises_exception_if_unit_is_not_valid(self):
         invalid_row = self.valid_row.copy()
         invalid_row['unit'] = 'some invalid unit'
@@ -103,6 +97,3 @@ class CSVRowSerializerTest(TestCase):
         self.serialize_and_save(second_valid_row)
 
         self.assertEqual(Shop.objects.count(), 1)
-
-    
-
