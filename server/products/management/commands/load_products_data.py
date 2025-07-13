@@ -2,6 +2,7 @@ import os
 import csv
 from django.core.management.base import BaseCommand, CommandError
 from products.serializers import CSVRowSerializer
+from rest_framework import serializers
 
 class Command(BaseCommand):
     
@@ -23,9 +24,8 @@ class Command(BaseCommand):
 
         with open(csv_file_path, 'r') as file:
             reader = csv.DictReader(file)
-            # print(reader.fieldnames)
             row_index = 2
-            for row in enumerate(reader, start=row_index):
+            for row in enumerate(reader, start=2):
                 try:
                     self.process_row(row)
                     row_index += 1
@@ -34,10 +34,5 @@ class Command(BaseCommand):
 
     def process_row(self, row):
         serializer = CSVRowSerializer(data=row)
-        if serializer.is_valid():
-            serializer.save()
-        else:
-           raise ValueError(serializer.errors)
-                
-
-    
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
