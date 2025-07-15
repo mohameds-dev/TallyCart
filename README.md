@@ -1,6 +1,7 @@
 # TallyCart
 
 This is a project for tracking products pricing and help create an optimized shopping cart to make grocery shopping easier and more cost efficient.
+View the project's kanban board [here](https://github.com/users/mohameds-dev/projects/3).
 
 ### Features under development
 
