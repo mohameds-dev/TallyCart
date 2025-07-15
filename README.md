@@ -1,4 +1,4 @@
-# Recipta
+# TallyCart
 
 This is a project for tracking products pricing and help create an optimized shopping cart to make grocery shopping easier and more cost efficient.
 
