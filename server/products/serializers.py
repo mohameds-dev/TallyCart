@@ -18,6 +18,8 @@ class CSVRowSerializer(serializers.Serializer):
     unit_price = serializers.CharField(required=True, allow_blank=False)
     store_name = serializers.CharField(required=True, allow_blank=False)
     store_location = serializers.CharField(required=False, allow_blank=True)
+    currency = serializers.CharField(required=False, allow_blank=True)
+    source = serializers.CharField(required=False, allow_blank=True)
 
 
     def create(self, validated_data):
@@ -31,6 +33,9 @@ class CSVRowSerializer(serializers.Serializer):
             date=format_date(validated_data['date']),
             unit=validated_data['unit'],
             unit_price=convert_price_to_float(validated_data['unit_price']),
+            store_product_id=validated_data['store_product_id'],
+            currency=validated_data.get('currency', 'USD'),
+            source=validated_data.get('source', 'manual input')
         )
 
         return product

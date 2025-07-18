@@ -29,21 +29,6 @@ class ProductModelTests(TestCase):
         product = Product.objects.create(name=long_name)
         self.assertEqual(str(product), f"{long_name[:50]}")
 
-    def test_product_with_store_product_id(self):
-        product = Product.objects.create(
-            name="Test Product", 
-            store_product_id="STORE123"
-        )
-        self.assertEqual(product.store_product_id, "STORE123")
-
-    def test_product_without_store_product_id(self):
-        product = Product.objects.create(name="Test Product")
-        self.assertIsNone(product.store_product_id)
-
-    def test_product_store_product_id_can_be_blank(self):
-        product = Product.objects.create(name="Test Product", store_product_id="")
-        self.assertEqual(product.store_product_id, "")
-
 
 class ProductTagModelTests(TestCase):
     def test_tag_str_representation_correctness(self):

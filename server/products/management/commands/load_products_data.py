@@ -32,6 +32,7 @@ class Command(BaseCommand):
                     self.stderr.write(f'Skipped row {row_index}: {e}')
 
     def process_row(self, row):
+        row['source'] = 'CSV input'
         serializer = CSVRowSerializer(data=row)
         serializer.is_valid(raise_exception=True)
         serializer.save()
