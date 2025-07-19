@@ -30,6 +30,13 @@ class Command(BaseCommand):
                 except Exception as e:
                     self.stderr.write(f'Skipped row {row_index}: {e}')
 
+        print('Done! Here are the counts of the records in the db:')
+        from products.models import Product, PriceSnapshot, Shop, Tag
+        print(f'Products: {Product.objects.count()}')
+        print(f'PriceSnapshots: {PriceSnapshot.objects.count()}')
+        print(f'Shops: {Shop.objects.count()}')
+        print(f'Tags: {Tag.objects.count()}')
+
     def process_row(self, row):
         row['source'] = 'CSV input'
         serializer = CSVRowSerializer(data=row)
