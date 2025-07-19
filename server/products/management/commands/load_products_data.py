@@ -2,7 +2,6 @@ import os
 import csv
 from django.core.management.base import BaseCommand, CommandError
 from products.serializers import CSVRowSerializer
-from rest_framework import serializers
 
 class Command(BaseCommand):
     

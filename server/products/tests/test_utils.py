@@ -7,7 +7,7 @@ class TestDateFormatter(TestCase):
 
 class TestPriceConverter(TestCase):
     def test_price_formatter_converts_csv_price_to_float(self):
-        self.assertEqual(convert_price_to_float('$1.49'), 1.49)
+        self.assertEqual(convert_price_to_float('$1.49'), Decimal('1.49'))
 
 class TestUnitValidator(TestCase):
     def test_unit_validator_raises_exception_if_unit_is_invalid(self):

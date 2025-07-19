@@ -54,6 +54,13 @@ class CSVRowSerializerTest(TestCase):
 
         self.assertEqual([tag.name for tag in tags], self.valid_row['tags'].split())
 
+    # def test_serializer_takes_two_valid_rows_of_the_same_product_with_same_tags_and_does_not_duplicate_tags(self):
+    #     self.serialize_and_save(self.valid_row)
+    #     self.serialize_and_save(self.valid_row.copy())
+    #     product = Product.objects.get(name=self.valid_row['product_name'])
+
+    #     self.assertEqual(product.tags.count(), 3)
+
     def test_serializer_takes_two_valid_rows_of_the_same_product_and_creates_one_product(self):
         self.serialize_and_save(self.valid_row)
         second_valid_row = self.valid_row.copy()
@@ -97,6 +104,12 @@ class CSVRowSerializerTest(TestCase):
         self.serialize_and_save(second_valid_row)
 
         self.assertEqual(Shop.objects.count(), 1)
+
+    def test_serializer_takes_two_valid_rows_of_the_same_product_with_same_price_info_and_creates_one_price_snapshot(self):
+        self.serialize_and_save(self.valid_row)
+        self.serialize_and_save(self.valid_row)
+
+        self.assertEqual(PriceSnapshot.objects.count(), 1)
 
     def test_serializer_takes_a_valid_row_and_creates_price_snapshot_with_correct_store_product_id(self):
         self.serialize_and_save(self.valid_row)

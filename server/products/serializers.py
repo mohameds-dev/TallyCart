@@ -1,7 +1,4 @@
 from rest_framework import serializers
-from decimal import Decimal, InvalidOperation
-from datetime import datetime
-from django.utils import timezone
 from .models import Product, Tag, PriceSnapshot
 from shops.models import Shop
 from .utils import format_date, convert_price_to_float, validate_unit
@@ -27,9 +24,12 @@ class CSVRowSerializer(serializers.Serializer):
         tags = self._create_tags(validated_data)
         product.tags.set(tags)
         product.save()
-        PriceSnapshot.objects.create(
+        
+        shop, _ = Shop.objects.get_or_create(name=validated_data['store_name'], address=validated_data['store_location'])
+        
+        PriceSnapshot.objects.get_or_create(
             product=product,
-            shop=Shop.objects.get_or_create(name=validated_data['store_name'], address=validated_data['store_location'])[0],
+            shop=shop,
             date=format_date(validated_data['date']),
             unit=validated_data['unit'],
             unit_price=convert_price_to_float(validated_data['unit_price']),
