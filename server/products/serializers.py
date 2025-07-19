@@ -54,9 +54,13 @@ class CSVRowSerializer(serializers.Serializer):
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        fields = ['id', 'name', 'store_product_id', 'tags']
+        fields = ['id', 'name', 'tags']
         read_only_fields = ['id']
 
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data['tags'] = TagSerializer(instance.tags.all(), many=True).data
+        return data
 
 class ShopSerializer(serializers.ModelSerializer):
     class Meta:
