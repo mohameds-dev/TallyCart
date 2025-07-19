@@ -14,4 +14,10 @@ exclude_lines =
     pragma: no cover
     def __repr__
     raise AssertionError
-    raise NotImplementedError 
+    raise NotImplementedError
+
+[html]
+directory = htmlcov
+
+[xml]
+output = coverage.xml 
