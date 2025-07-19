@@ -11,3 +11,9 @@ db.sqlite3
 *.pyw
 *.pyz
 .fuse_hidden*
+
+# Coverage reports
+.coverage
+htmlcov/
+.coverage.*
+coverage.xml

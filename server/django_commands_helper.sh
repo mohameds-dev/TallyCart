@@ -13,6 +13,7 @@ commands=(
   "python manage.py test                     # run unit tests"
   "python manage.py collectstatic            # gather static files"
   "python manage.py startapp                 # create new app"
+  "python manage.py load_products_data ../data/receipts_data.csv       # load products data from CSV"
   "exit"
 )
 
