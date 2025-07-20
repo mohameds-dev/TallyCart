@@ -3,3 +3,12 @@ GET http://localhost:8000/products/
 
 ### Get a product by ID
 GET http://localhost:8000/products/1/
+
+### Search products by name
+GET http://localhost:8000/products/?search=apple
+
+### Search products by tag
+GET http://localhost:8000/products/?search=cheese
+
+### Search products by name and tag
+GET http://localhost:8000/products/?search=opal fruit
