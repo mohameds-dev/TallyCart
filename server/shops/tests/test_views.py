@@ -4,7 +4,7 @@ from rest_framework import status
 from django.urls import reverse
 from shops.models import Shop
 
-class TestShopViews(TestCase):
+class TestShopRetrievalViews(TestCase):
     def setUp(self):
         self.client = APIClient()
         self.url = reverse('shops')
@@ -33,3 +33,34 @@ class TestShopViews(TestCase):
         response = self.client.get(reverse('shop', args=[999]))
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+class TestShopSearchViews(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.url = reverse('shops')
+
+    def test_search_by_name_returns_correct_shops(self):
+        Shop.objects.create(name="Test Shop")
+        Shop.objects.create(name="Another Shop")
+        response = self.client.get(self.url, {'search': 'Test'})
+        
+        self.assertEqual(response.data[0]['name'], "Test Shop")
+
+    def test_search_by_incorrect_name_returns_empty_list(self):
+        Shop.objects.create(name="Test Shop")
+        response = self.client.get(self.url, {'search': 'Incorrect Name'})
+
+        self.assertEqual(len(response.data), 0)
+
+    def test_search_by_address_returns_correct_shops(self):
+        Shop.objects.create(name="Test Shop", address="123 Main St")
+        Shop.objects.create(name="Another Shop", address="456 Main St")
+        response = self.client.get(self.url, {'search': 'Main St'})
+
+        self.assertEqual(len(response.data), 2)
+        
+    def test_search_by_incorrect_address_returns_empty_list(self):
+        Shop.objects.create(name="Test Shop", address="123 Main St")
+        response = self.client.get(self.url, {'search': 'Incorrect Address'})
+
+        self.assertEqual(len(response.data), 0)
