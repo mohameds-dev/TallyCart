@@ -1,0 +1,5 @@
+### Get all shops
+GET http://localhost:8000/shops/
+
+### Get a shop by ID
+GET http://localhost:8000/shops/1/
