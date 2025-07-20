@@ -1,10 +1,13 @@
 from django.test import TestCase
-from products.models import Product, Tag
+from products.models import Product, Tag, PriceSnapshot
+from shops.models import Shop
 from rest_framework.test import APIClient
 from django.urls import reverse
 from rest_framework import status
+from datetime import datetime
+from decimal import Decimal
 
-class TestProductRetrievalViews(TestCase):
+class TestProductGetViews(TestCase):
     def setUp(self):
         self.client = APIClient()
         self.url = reverse('products')
@@ -40,6 +43,29 @@ class TestProductRetrievalViews(TestCase):
         response = self.client.get(self.url)
         
         self.assertEqual(response.data[0]['tags'][0], {'id': 1, 'name': 'TestTag'})
+
+    def create_product_with_price_and_shop_information(self):
+        product = Product.objects.create(name="Test Product")
+        shop1 = Shop.objects.create(name="Test Shop 1")
+        shop2 = Shop.objects.create(name="Test Shop 2")
+        PriceSnapshot.objects.create(product=product, shop=shop1, unit_price=10.00, date=datetime.now())
+        PriceSnapshot.objects.create(product=product, shop=shop2, unit_price=15.00, date=datetime.now())
+    
+        return product
+
+    def test_create_product_with_price_information_and_response_contains_two_price_snapshots(self):
+        product = self.create_product_with_price_and_shop_information()
+        response = self.client.get(reverse('product', args=[product.id]))
+
+        self.assertEqual(len(response.data['price_snapshots']), 2)
+
+    def test_create_product_with_price_information_and_response_contains_snapshots_with_correct_price(self):
+        product = self.create_product_with_price_and_shop_information()
+        response = self.client.get(reverse('product', args=[product.id]))
+        prices = [snapshot['unit_price'] for snapshot in response.data['price_snapshots']]
+        
+        self.assertEqual(prices, [Decimal('15.0000'), Decimal('10.0000')])
+        
 
 class TestProductSearchViews(TestCase):
     def setUp(self):    
