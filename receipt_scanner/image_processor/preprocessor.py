@@ -15,12 +15,23 @@ def resize_image(image, max_width=1000):
 
     return image
 
-def preprocess_image(image):
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
-    enhanced = clahe.apply(gray)
+def preprocess_image(image, config={}):
 
-    return enhanced
+    if config.get('resize'):
+        max_width = config.get('resize').get('max_width')
+        image = resize_image(image, max_width)
+
+    if config.get('greyscale'):
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+    if config.get('clahe'):
+        clip_limit = config.get('clahe').get('clipLimit')
+        tile_grid_size = config.get('clahe').get('tileGridSize')
+        clahe = cv2.createCLAHE(clipLimit=clip_limit, tileGridSize=tile_grid_size)
+        image = clahe.apply(image)
+
+    return image
 
 def save_image(image, path):
     cv2.imwrite(path, image)
+
