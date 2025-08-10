@@ -1,29 +1,17 @@
-# Recipta
+# TallyCart
 
-This is a project for processing shopping products from receipts, APIs, or manual input to keep track of prices and help estimate cart price.
+This is a project for tracking products pricing and help create an optimized shopping cart to make grocery shopping easier and more cost efficient.
+View the project's kanban board [here](https://github.com/users/mohameds-dev/projects/3).
 
-### Features currently under development
+### Features under development
 
-- Receipt reading
-
-  - Image should be cropped and cleaned from noise
-  - OCR text is forwarded to LLM
-  - LLM prompt is engineered to make the LLM return a structured output
-
-- Saving & retreiving user data:
-  - User auth
-  - Scans
-  - Products: CRUD operations on purchased products
-  - Query the products
+- Adding products and shops
+- Price tracking
+- Product search
+- Shopping cart creation & optimization
 
 ### Future features:
 
-- Shops / locations
+- Scanning and reading receipts
+- Integration with 3rd party API
 
-  - Add shop details (e.g. address, API site, etc)
-  - Create a trip optimizer for visiting multiple locations (might just use Google maps API on client side app)
-  - Track and view price trends with charts and account for discounts & predict prices (linear regression)
-
-- Tags
-  - Create tags for different categories and product names
-  - Tag products with relevant tags for easier searching

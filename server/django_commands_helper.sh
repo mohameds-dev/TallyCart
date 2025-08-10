@@ -17,6 +17,12 @@ commands=(
   "exit"
 )
 
+# Check if fzf is installed
+if ! command -v fzf &> /dev/null; then
+  echo "fzf could not be found. Please install it first using 'sudo apt install fzf'"
+  exit 1
+fi
+
 # Let user select a command
 choice=$(printf "%s\n" "${commands[@]}" | fzf --prompt="Pick a Django command: ")
 
