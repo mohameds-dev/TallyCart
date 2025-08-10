@@ -50,13 +50,29 @@ class CSVRowSerializer(serializers.Serializer):
     def _create_tags(self, validated_data):
         return [Tag.objects.get_or_create(name=tag_name)[0] for tag_name in validated_data.pop('tags').split(' ')]
 
-
-class ProductSerializer(serializers.ModelSerializer):
+class ProductBaseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        fields = ['id', 'name', 'store_product_id', 'tags']
+        fields = ['id', 'name', 'tags']
         read_only_fields = ['id']
 
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data['tags'] = TagSerializer(instance.tags.all(), many=True).data
+        return data
+
+class ProductListSerializer(ProductBaseSerializer):
+    class Meta(ProductBaseSerializer.Meta):
+        pass
+    
+class ProductDetailSerializer(ProductBaseSerializer):
+    class Meta(ProductBaseSerializer.Meta):
+        pass
+    
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data['price_snapshots'] = PriceSnapshotSerializer(PriceSnapshot.objects.filter(product=instance), many=True).data
+        return data
 
 class ShopSerializer(serializers.ModelSerializer):
     class Meta:
@@ -70,6 +86,11 @@ class PriceSnapshotSerializer(serializers.ModelSerializer):
         model = PriceSnapshot
         fields = ['id', 'product', 'shop', 'date', 'unit', 'unit_price', 'currency', 'source']
         read_only_fields = ['id']
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data['unit_price'] = convert_price_to_float(data['unit_price'])
+        return data
 
 
 class TagSerializer(serializers.ModelSerializer):
