@@ -79,3 +79,48 @@ class TestJsonAccuracyEvaluator(TestCase):
         sample_data = {'key1': [10, 30]}
 
         self.assertEqual(evaluate_accuracy(ground_truth_data, sample_data), 50)
+
+    def test_evaluate_accuracy_takes_two_empty_lists_and_returns_100(self):
+        ground_truth_data = []
+        sample_data = []
+
+        self.assertEqual(evaluate_accuracy(ground_truth_data, sample_data), 100)
+
+    def test_evaluate_accuracy_takes_empty_ground_truth_data_and_non_empty_sample_data_and_returns_0(self):
+        ground_truth_data = []
+        sample_data = [10, 20]
+
+        self.assertEqual(evaluate_accuracy(ground_truth_data, sample_data), 0)
+
+    def test_evaluate_accuracy_takes_two_lists_with_two_elements_swapped_and_returns_0(self):
+        ground_truth_data = [10, 20]
+        sample_data = [20, 10]
+
+        self.assertEqual(evaluate_accuracy(ground_truth_data, sample_data), 0)
+
+    def test_evaluate_accuracy_takes_two_lists_with_one_correct_and_one_misplaced_entry_and_returns_50_percent(self):
+        ground_truth_data = [10, 30]
+        sample_data = [10, 20, 30]
+
+        self.assertEqual(evaluate_accuracy(ground_truth_data, sample_data), 50)
+
+    def test_evaluate_accuracy_takes_two_equal_strings_and_returns_100(self):
+        ground_truth_data = 'Hello, world!'
+        sample_data = 'Hello, world!'
+
+        self.assertEqual(evaluate_accuracy(ground_truth_data, sample_data), 100)
+
+    def test_evaluate_accuracy_takes_two_empty_strings_and_returns_100(self):
+        self.assertEqual(evaluate_accuracy('', ''), 100)
+
+    def test_evaluate_accuracy_takes_a_70_percent_complete_sample_string_and_returns_70(self):
+        ground_truth_data = 'Hello, world!'
+        sample_data = 'Hello, '
+
+        self.assertEqual(evaluate_accuracy(ground_truth_data, sample_data), 70)
+
+    def test_evaluate_accuracy_takes_lists_with_dicts_with_3_entries_containing_2_extra_entries_and_returns_33_percent(self):
+        ground_truth_data = [{'key1': 10}]
+        sample_data = [{'key1': 10, 'key2': 20, 'key3': 30}]
+
+        self.assertEqual(evaluate_accuracy(ground_truth_data, sample_data), 33.33)
