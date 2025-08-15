@@ -124,3 +124,34 @@ class TestJsonAccuracyEvaluator(TestCase):
         sample_data = [{'key1': 10, 'key2': 20, 'key3': 30}]
 
         self.assertEqual(evaluate_accuracy(ground_truth_data, sample_data), 33.33)
+
+    def test_evaluate_accuracy_takes_two_dicts_with_many_nested_fields_and_returns_correct_value(self):
+        ground_truth_data = {
+            'dict1': {
+                'key1': 10,
+                'key2': 20,
+                'dict2': {
+                    'key3': 30,
+                    'key4': 40
+                }
+            },
+            'list1': [10, 20, 30],
+            'list2': ['abc', 'def', 20],
+            'list3': [10, 20, {}],
+            'str1': 'Hello, world!',
+            'str2': 'Hello, world!',
+        }
+
+        sample_data = {
+            'dict1': {
+                'key1': 10,
+                'key2': 20,
+                'dict2': {
+                    'key3': 30,
+                    'key4': 40
+                }
+            },
+            'str2': 'Hello, people!',
+        }
+
+        self.assertEqual(evaluate_accuracy(ground_truth_data, sample_data), 26.34)
