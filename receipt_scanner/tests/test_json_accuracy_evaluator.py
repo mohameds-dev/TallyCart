@@ -155,3 +155,30 @@ class TestJsonAccuracyEvaluator(TestCase):
         }
 
         self.assertEqual(evaluate_accuracy(ground_truth_data, sample_data), 26.34)
+
+    def test_evaluate_accuracy_takes_two_identical_large_dicts_and_returns_100(self):
+        ground_truth_data = {
+            'product_name': 'Product Name',
+            'price_snapshots':[
+                {'price': 100, 'date': '2021-01-01', 'time': '12:00:00', 'shop_name': 'Shop Name1'},
+                {'price': 100, 'date': '2021-01-02', 'time': '12:00:00', 'shop_name': 'Shop Name2'},
+                {'price': 101, 'date': '2021-01-03', 'time': '12:00:00', 'shop_name': 'Shop Name1'},
+                {'price': 102, 'date': '2021-01-04', 'time': '12:00:00', 'shop_name': 'Shop Name2'},
+                {'price': 103, 'date': '2021-01-05', 'time': '12:00:00', 'shop_name': 'Shop Name1'},
+                {'price': 104, 'date': '2021-01-06', 'time': '12:00:00', 'shop_name': 'Shop Name2'},
+                {'price': 105, 'date': '2021-01-07', 'time': '12:00:00', 'shop_name': 'Shop Name1'},
+                {'price': 106, 'date': '2021-01-08', 'time': '12:00:00', 'shop_name': 'Shop Name2'},
+                {'price': 107, 'date': '2021-01-09', 'time': '12:00:00', 'shop_name': 'Shop Name1'},
+                {'price': 108, 'date': '2021-01-10', 'time': '12:00:00', 'shop_name': 'Shop Name2'},
+            ],
+            'tags': ['tag1', 'tag2', 'tag3'],
+        }
+        sample_data = ground_truth_data.copy()
+
+        self.assertEqual(evaluate_accuracy(ground_truth_data, sample_data), 100)
+
+    def test_evaluate_accuracy_takes_two_dicts_half_matching_and_returns_50(self):
+        ground_truth_data = {'key1': 10, 'key2': 20, 'key3': 30, 'key4': 40}
+        sample_data = {'key1': 10, 'key2': 20, 'key3': 40, 'key4': 50}
+
+        self.assertEqual(evaluate_accuracy(ground_truth_data, sample_data), 50)

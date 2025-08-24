@@ -64,9 +64,7 @@ class AccuracyEvaluator:
         self.type_evaluators[type(ground_truth_data)](ground_truth_data, sample_data)
 
 def evaluate_accuracy(ground_truth_data, sample_data):
-
     evaluator = AccuracyEvaluator()
     evaluator.evaluate_accuracy(ground_truth_data, sample_data)
-    return round(100*evaluator.fields_matched/evaluator.fields_total if evaluator.fields_total > 0 else 100, 2)
 
-# create a decorator that checks if the sample data and/or the ground truth data is None and handle evaluation accordingly
+    return round(100*evaluator.fields_matched/evaluator.fields_total if evaluator.fields_total > 0 else 100, 2)
