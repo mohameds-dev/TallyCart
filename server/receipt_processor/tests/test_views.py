@@ -5,6 +5,7 @@ from rest_framework.test import APIClient
 from ..models import ReceiptScan
 from django.core.files.uploadedfile import SimpleUploadedFile
 import os
+from unittest.mock import patch
 
 class ReceiptScanViewsTests(TestCase):
     def setUp(self):
@@ -46,11 +47,16 @@ class ReceiptScanViewsTests(TestCase):
     def test_receipt_scan_detail_view_get_returns_404_status_code_when_there_are_no_scans(self):
         self.assertEqual(self.client.get(self.receipt_scan_detail_url(scan_id=1)).status_code, status.HTTP_404_NOT_FOUND)
 
+    def test_receipt_scan_request_post_returns_the_correct_id(self):
+        response = self.client.post(self.receipt_scan_request_url, self.receipt_scan_requestdata)
+        self.assertEqual(response.data['id'], ReceiptScan.objects.get(id=response.data['id']).id)
+    
     def test_receipt_scan_request_post_creates_a_scan_with_pending_status(self):
         response = self.client.post(self.receipt_scan_request_url, self.receipt_scan_requestdata)
         
         self.assertEqual(ReceiptScan.objects.get(id=response.data['id']).status, 'pending')
 
-# TODO: start migrating the processing logic to the django app with TDD
-# - Pay attention to the diagram you drew: processing logic will be integrated with the db
-# - must create db backup or use the json logging logic to save the processing steps and evaluate later
+    def test_receipt_scan_request_post_calls_the_process_receipt_task(self):
+        with patch('receipt_processor.tasks.process_receipt_task.delay') as mock_process_receipt_task:
+            self.client.post(self.receipt_scan_request_url, self.receipt_scan_requestdata)
+            mock_process_receipt_task.assert_called_once()

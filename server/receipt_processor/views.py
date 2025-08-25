@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from .serializers import ReceiptScanSerializer
 from .models import ReceiptScan
+from .tasks import process_receipt_task
 
 class ReceiptScanView(APIView):
     def post(self, request, *args, **kwargs):
@@ -28,6 +29,6 @@ class ReceiptScanProcessView(APIView):
         image = request.data.get('image')
         if not image:
             return Response({'error': 'Image is required'}, status=status.HTTP_400_BAD_REQUEST)
-        # TODO: process the image and return the receipt scan id
         scan = ReceiptScan.objects.create(image=image)
+        process_receipt_task.delay(scan.id)
         return Response({'id': scan.id}, status=status.HTTP_201_CREATED)
