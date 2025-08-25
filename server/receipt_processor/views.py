@@ -4,7 +4,7 @@ from rest_framework import status
 from .serializers import ReceiptScanSerializer
 from .models import ReceiptScan
 
-class ReceiptsScanRetrievalView(APIView):
+class ReceiptScanView(APIView):
     def post(self, request, *args, **kwargs):
         serializer = ReceiptScanSerializer(data=request.data)
         if serializer.is_valid():
@@ -14,14 +14,16 @@ class ReceiptsScanRetrievalView(APIView):
 
     def get(self, request, *args, **kwargs):
         scan_id = kwargs.get('scan_id')
+        if scan_id is None:
+            serializer = ReceiptScanSerializer(ReceiptScan.objects.all(), many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
         try:
-            scan = ReceiptScan.objects.get(id=scan_id)
-            serializer = ReceiptScanSerializer(scan)
+            serializer = ReceiptScanSerializer(ReceiptScan.objects.get(id=scan_id))
             return Response(serializer.data, status=status.HTTP_200_OK)
         except ReceiptScan.DoesNotExist:
             return Response({'error': 'Receipt scan not found'}, status=status.HTTP_404_NOT_FOUND)
 
-class ReceiptsScanProcessingView(APIView):
+class ReceiptScanProcessView(APIView):
     def post(self, request, *args, **kwargs):
         image = request.data.get('image')
         if not image:
