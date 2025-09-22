@@ -53,3 +53,9 @@ def generate_receipt_scan_sample(image_path, sample_id=None):
 
 
     print(f"Sample {get_sample_id()} generated successfully")
+
+    return {
+        "sample_id": get_sample_id(),
+        "json_data": json_data,
+        "json_file_path": json_file_path
+    }
