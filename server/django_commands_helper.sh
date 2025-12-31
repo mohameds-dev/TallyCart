@@ -14,6 +14,7 @@ commands=(
   "python manage.py collectstatic            # gather static files"
   "python manage.py startapp                 # create new app"
   "python manage.py load_products_data ../data/receipts_data.csv       # load products data from CSV"
+  "delete_migrations                                # delete all migration files"
   "exit"
 )
 
@@ -39,6 +40,10 @@ elif [[ "$cmd" == "python manage.py startapp" ]]; then
 elif [[ "$cmd" == "python manage.py sqlmigrate" ]]; then
   read -p "Enter app and migration name (e.g. users 0001): " args
   python manage.py sqlmigrate $args
+elif [[ "$cmd" == "delete_migrations" ]]; then
+  echo "🗑️  Deleting all migration files (except __init__.py)..."
+  find . -path "*/migrations/*.py" -not -name "__init__.py" -delete
+  echo "✅ All migration files deleted!"
 else
   eval "$cmd"
 fi
