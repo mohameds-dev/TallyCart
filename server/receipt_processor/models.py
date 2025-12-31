@@ -17,4 +17,4 @@ class ReceiptScan(models.Model):
     processing_steps = models.JSONField(default=list, blank=True)
 
     def __str__(self):
-        return f"ReceiptScan {self.id}"
+        return f"ReceiptScan # ID: {self.pk}"

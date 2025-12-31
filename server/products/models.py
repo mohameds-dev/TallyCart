@@ -39,9 +39,6 @@ class PriceSnapshot(models.Model):
     class Meta:
         unique_together = ('product', 'date', 'unit', 'unit_price', 'currency', 'shop')
         ordering = ['-date']
-        indexes = [
-            models.Index(fields=['product', 'date']),
-        ]
 
     def __str__(self):
         return f"{self.product} - FOR {self.unit_price:.2f} {self.currency} / {self.unit} - ON {self.date} {f'FROM {self.shop}' if self.shop else ''}"
