@@ -30,5 +30,5 @@ class ReceiptScanProcessView(APIView):
         if not image:
             return Response({'error': 'Image is required'}, status=status.HTTP_400_BAD_REQUEST)
         scan = ReceiptScan.objects.create(image=image)
-        process_receipt_task.delay(scan.id)
-        return Response({'id': scan.id}, status=status.HTTP_201_CREATED)
+        process_receipt_task.delay(scan.pk)
+        return Response({'id': scan.pk}, status=status.HTTP_201_CREATED)

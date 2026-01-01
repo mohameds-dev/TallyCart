@@ -6,7 +6,7 @@ from decimal import Decimal
 class ShopModelTests(TestCase):
     def test_shop_str_name_representation_correctness(self):
         shop = Shop.objects.create(name="Test Shop")
-        self.assertEqual(str(shop), "Test Shop")
+        self.assertEqual(str(shop), "Shop: Test Shop # ID: 1 # ADDRESS: N/A # URL: N/A")
 
     def test_shop_field_initialization_correctness(self):
         shop_data = {
@@ -47,8 +47,8 @@ class ShopModelTests(TestCase):
 
     def test_shop_str_name_representation_correctness_with_address(self):
         shop = Shop.objects.create(name="Test Shop", address="123 Main St, Anytown, USA")
-        self.assertEqual(str(shop), "Test Shop AT 123 Main St, Anytown, USA")
+        self.assertEqual(str(shop), "Shop: Test Shop # ID: 1 # ADDRESS: 123 Main St, Anytown, USA # URL: N/A")
 
     def test_shop_str_name_representation_correctness_with_address_and_url(self):
         shop = Shop.objects.create(name="Test Shop", address="123 Main St, Anytown, USA", url="https://www.testshop.com")
-        self.assertEqual(str(shop), "Test Shop AT 123 Main St, Anytown, USA - https://www.testshop.com")
+        self.assertEqual(str(shop), "Shop: Test Shop # ID: 1 # ADDRESS: 123 Main St, Anytown, USA # URL: https://www.testshop.com")

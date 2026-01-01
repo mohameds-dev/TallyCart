@@ -10,7 +10,7 @@ class ProcessReceiptTaskTests(TestCase):
 
     def test_process_receipt_task_sets_status_to_completed(self):
         scan = self.sample_scan_object
-        process_receipt_task(scan.id)
+        process_receipt_task(scan.pk)
         scan.refresh_from_db()
 
         self.assertEqual(scan.status, 'completed')
@@ -19,14 +19,14 @@ class ProcessReceiptTaskTests(TestCase):
         scan = self.sample_scan_object
         with patch('receipt_processor.tasks.scan_image_text') as mock_scan_image_text:
             mock_scan_image_text.return_value = 'Mocked OCR text'
-            process_receipt_task(scan.id)
+            process_receipt_task(scan.pk)
             mock_scan_image_text.assert_called_once()
 
     def test_process_receipt_task_sets_ocr_text_to_the_return_value_of_scan_image_text(self):
         scan = self.sample_scan_object
         with patch('receipt_processor.tasks.scan_image_text') as mock_scan_image_text:
             mock_scan_image_text.return_value = 'Mocked OCR text'
-            process_receipt_task(scan.id)
+            process_receipt_task(scan.pk)
             scan.refresh_from_db()
 
             self.assertEqual(scan.ocr_text, 'Mocked OCR text')
@@ -34,7 +34,7 @@ class ProcessReceiptTaskTests(TestCase):
     def test_process_receipt_task_calls_get_llm_response(self):
         scan = self.sample_scan_object
         with patch('receipt_processor.tasks.get_llm_response') as mock_get_llm_response:
-            process_receipt_task(scan.id)
+            process_receipt_task(scan.pk)
             mock_get_llm_response.assert_called_once()
 
     @patch('receipt_processor.tasks.get_llm_response')
@@ -42,7 +42,7 @@ class ProcessReceiptTaskTests(TestCase):
     def test_process_receipt_task_calls_get_llm_response_with_ocr_text_included_in_the_prompt(self, mock_scan_image_text, mock_get_llm_response):
         scan = self.sample_scan_object
         mock_scan_image_text.return_value = 'Mocked OCR text'
-        process_receipt_task(scan.id)
+        process_receipt_task(scan.pk)
         called_arg = mock_get_llm_response.call_args[0][0]
 
         self.assertIn('Mocked OCR text', called_arg)
@@ -51,7 +51,7 @@ class ProcessReceiptTaskTests(TestCase):
         scan = self.sample_scan_object
         with patch('receipt_processor.tasks.scan_image_text') as mock_scan_image_text:
             mock_scan_image_text.side_effect = Exception('Mocked exception')
-            process_receipt_task(scan.id)
+            process_receipt_task(scan.pk)
             scan.refresh_from_db()
 
             self.assertEqual(scan.status, 'failed')
