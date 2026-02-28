@@ -1,0 +1,14 @@
+### Get all shops
+GET http://localhost:8000/shops/
+
+### Get a shop by ID
+GET http://localhost:8000/shops/1/
+
+### Search shops by name
+GET http://localhost:8000/shops/?search=costco
+
+### Search shops by address
+GET http://localhost:8000/shops/?search=richmond ave
+
+### Search shops by name and address
+GET http://localhost:8000/shops/?search=costco richmond ave

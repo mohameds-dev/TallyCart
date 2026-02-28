@@ -1,0 +1,15 @@
+{
+  "include": [
+    "server"
+  ],
+  "exclude": [
+    "**/__pycache__",
+    "**/.venv"
+  ],
+  "reportMissingImports": false,
+  "reportMissingTypeStubs": false,
+  "pythonVersion": "3.12",
+  "typeCheckingMode": "off",
+  "stubPath": "typings"
+}
+
