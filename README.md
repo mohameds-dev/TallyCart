@@ -1,71 +1,125 @@
 # TallyCart
 
-This is a project for tracking products pricing and help create an optimized shopping cart to make grocery shopping easier and more cost efficient.
-View the project's kanban board [here](https://github.com/users/mohameds-dev/projects/3).
+A backend service for tracking product prices and building optimized shopping lists to make grocery shopping cheaper and easier. The system ingests receipt data (via scan or upload), parses it through OCR and LLM-based extraction, and exposes structured product and shop data via a REST API.
 
-### Features under development
+---
 
-- Adding products and shops
-- Price tracking
-- Product search
-- Shopping cart creation & optimization
+## Highlights
 
-### Future features:
+- **Test-driven development** — Test suite enforces a **minimum 90% code coverage**; CI/CD fails if coverage drops below that threshold.
+- **Fully dockerized** — Single `docker-compose up` brings up Django, Celery, PostgreSQL, and Redis with health checks and automatic migrations.
+- **Receipt processing pipeline** — End-to-end flow: upload image → OCR (EasyOCR) → LLM parsing (Gemini) → structured JSON; async via Celery and status polling.
+- **REST API** — Products (with price snapshots and tags), shops (with search), and receipts (scan, list, detail) are available and tested.
 
-- Scanning and reading receipts
-- Integration with 3rd party API
+---
 
-## Docker Setup
+## Tech Stack
+
+| Layer        | Technology                    |
+|-------------|-------------------------------|
+| Backend     | Django 4.2, Django REST Framework |
+| Task queue  | Celery, Redis                 |
+| Database    | PostgreSQL 15                 |
+| OCR         | EasyOCR, OpenCV (headless)    |
+| LLM         | Google Gemini API             |
+| Containers  | Docker, Docker Compose        |
+| CI/CD       | GitHub Actions (tests + coverage gate) |
+
+---
+
+## What’s in place
+
+- **Products API** — CRUD, price snapshots, tags, search by name/tag.
+- **Shops API** — CRUD, search by name and address.
+- **Receipts API** — `POST /receipts/scan/` with an image → returns scan ID; `GET /receipts/<id>/` for status and parsed receipt data. Processing runs asynchronously in Celery.
+- **Receipt pipeline** — Image preprocessing (OpenCV), OCR (EasyOCR), structured extraction and revision (Gemini), stored as JSON with accuracy evaluation utilities.
+- **Test suite** — Unit and integration tests for views, tasks, parsers, and utilities; mocks used for OCR/LLM so tests are fast and deterministic.
+
+---
+
+## Current focus
+
+The project is in active development. Current priorities:
+
+1. **Data and content** — Loading and curating more product/shop data.
+2. **User auth** — Designing and implementing the user model and authentication for the API.
+3. **API expansion** — Additional endpoints and features to support the future frontend.
+4. **Frontend** — Planned after the API and auth are in a good place.
+
+---
+
+## Getting started
 
 ### Prerequisites
-- Docker and Docker Compose installed
 
-### Environment Variables
+- Docker and Docker Compose
+- For receipt scanning: a [Gemini API key](https://aistudio.google.com/app/apikey) (optional for running the app; required for the scan pipeline)
 
-Docker Compose reads environment variables in two ways:
+### Run with Docker
 
-1. **`.env` file in project root** (for Docker Compose variable substitution):
-   - Create a `.env` file in the project root (same directory as `docker-compose.yml`)
-   - Variables like `${DJANGO_SECRET_KEY}` in docker-compose.yml will be read from this file
-   - Example `.env` file:
-     ```
-     DJANGO_SECRET_KEY=your-secret-key-here
-     DEBUG=True
-     ```
+1. Clone the repo and add a `.env` file in the project root (see [Environment variables](#environment-variables)).
 
-2. **`env_file` directive** (for container environment variables):
-   - The `env_file: - .env` in docker-compose.yml loads variables into containers
-   - These are available to Django via `os.getenv()` and `load_dotenv()`
-   - Variables in the `environment:` section override `env_file` values
+2. Build and start all services:
 
-**Note:** The `.env` file is gitignored, so create your own from the example above.
-
-### Running the application
-
-1. Build and start all services:
    ```bash
    docker-compose up --build
    ```
 
-   The entrypoint script will automatically:
-   - Wait for PostgreSQL to be ready
-   - Run database migrations
-   - Start the Django development server
+3. Use the app:
 
-2. Access the application:
-   - Django backend: http://localhost:8000
-   - PostgreSQL: localhost:5432
-   - Redis: localhost:6379
+   - **Django API:** http://localhost:8000  
+   - **Products:** http://localhost:8000/products/  
+   - **Shops:** http://localhost:8000/shops/  
+   - **Receipts (list):** http://localhost:8000/receipts/  
+   - **Scan receipt:** `POST http://localhost:8000/receipts/scan/` with `image` (multipart file)
+
+The entrypoint scripts wait for PostgreSQL, run migrations, then start the server and Celery worker.
 
 ### Services
-- `server`: Django development server (auto-reloads on code changes)
-- `celery`: Celery worker for background tasks
-- `db`: PostgreSQL database (data persists in `postgres_data` volume)
-- `redis`: Redis for Celery broker
 
-### Notes
-- Code changes in `server/` directory will automatically reload without rebuilding
-- Database data persists in Docker volume `postgres_data`
-- Migrations run automatically on container startup via entrypoint script
-- Set `DJANGO_SECRET_KEY` environment variable for production use
+| Service  | Description                                      |
+|----------|--------------------------------------------------|
+| `server` | Django app (runserver; code reload via volume)   |
+| `celery` | Celery worker for receipt processing             |
+| `db`     | PostgreSQL 15 (data in `postgres_data` volume)   |
+| `redis`  | Redis (Celery broker)                            |
 
+---
+
+## Environment variables
+
+Containers use the root `.env` file (via `env_file` and `environment` in `docker-compose.yml`). Recommended variables:
+
+| Variable           | Description                                      |
+|--------------------|--------------------------------------------------|
+| `DJANGO_SECRET_KEY`| Secret for Django (required in production)       |
+| `GEMINI_API_KEY`   | Google AI Studio key for receipt LLM parsing     |
+| `DEBUG`            | Set to `True` for local development              |
+| `REDIS_URL`        | Override if not using default Redis in Compose   |
+
+See `.env.example` for a template. The `.env` file is gitignored.
+
+---
+
+## Running tests locally
+
+From the project root, with a virtualenv that has dependencies installed:
+
+```bash
+cd server
+python manage.py test
+```
+
+With coverage (must meet 90% to pass in CI):
+
+```bash
+cd server
+coverage run --source='.' manage.py test
+coverage report --fail-under=90
+```
+
+---
+
+## Project board
+
+Roadmap and tasks: [GitHub Project Board](https://github.com/users/mohameds-dev/projects/3).
