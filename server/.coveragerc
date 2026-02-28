@@ -1,10 +1,14 @@
 [run]
 source = .
-omit = 
+omit =
     */tests/*
     */migrations/*
     */venv/*
     */.venv/*
+    */cv2/*
+    *config*
+    settings.py
+    prompts.py
     manage.py
     */asgi.py
     */wsgi.py

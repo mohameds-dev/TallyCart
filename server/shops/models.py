@@ -13,4 +13,4 @@ class Shop(models.Model):
 
 
     def __str__(self):
-        return f"{self.name}{(f' AT {self.address}') if self.address else ''}{f' - {self.url}' if self.url else ''}"
+        return f"Shop: {self.name} # ID: {self.pk} # ADDRESS: {self.address or 'N/A'} # URL: {self.url or 'N/A'}"

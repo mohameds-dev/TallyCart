@@ -12,16 +12,16 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Shop',
+            name='ReceiptScan',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=255)),
+                ('image', models.ImageField(upload_to='uploaded_receipt_images/')),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('updated_at', models.DateTimeField(auto_now=True)),
-                ('url', models.URLField(blank=True, max_length=255)),
-                ('address', models.CharField(blank=True, max_length=255)),
-                ('latitude', models.DecimalField(decimal_places=8, max_digits=10, null=True)),
-                ('longitude', models.DecimalField(decimal_places=8, max_digits=10, null=True)),
+                ('status', models.CharField(choices=[('pending', 'Pending'), ('processing', 'Processing'), ('completed', 'Completed'), ('failed', 'Failed')], default='pending', max_length=20)),
+                ('ocr_text', models.TextField(blank=True)),
+                ('receipt_data', models.JSONField(blank=True, default=dict)),
+                ('processing_steps', models.JSONField(blank=True, default=list)),
             ],
         ),
     ]

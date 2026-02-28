@@ -17,3 +17,7 @@ db.sqlite3
 htmlcov/
 .coverage.*
 coverage.xml
+
+# images and temporary json outputs
+server/media/uploaded_receipt_images/*
+out.json

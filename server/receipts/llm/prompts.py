@@ -14,7 +14,7 @@ You are a receipt parser. Given raw OCR text from a grocery receipt, return only
   - "price": float
   
 
-Output only the JSON. No explanations.
+Output only the JSON. No explanations. If you encounter any errors, add them to the "errors" list.
 
 Example OCR text:
 
@@ -40,7 +40,8 @@ Expected JSON:
       "unit_price": 6.66,
       "price": 9.99
     }
-  ]
+  ],
+  "errors": []
 }
 
 Now parse:
