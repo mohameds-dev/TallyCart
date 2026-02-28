@@ -34,6 +34,7 @@ jobs:
       - name: Run tests with coverage
         working-directory: ./server
         env:
+          DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
           python -m coverage run --source='.' manage.py test --verbosity=2
