@@ -1,11 +1,19 @@
+import io
 from django.test import TestCase
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
 from ..models import ReceiptScan
 from django.core.files.uploadedfile import SimpleUploadedFile
+from PIL import Image
 import os
 from unittest.mock import patch
+
+# Minimal 1x1 JPEG bytes so tests don't depend on external files or real image I/O
+def _minimal_jpeg_bytes():
+    buf = io.BytesIO()
+    Image.new('RGB', (1, 1), color='white').save(buf, format='JPEG')
+    return buf.getvalue()
 
 class ReceiptScanViewsTests(TestCase):
     def setUp(self):
@@ -16,7 +24,7 @@ class ReceiptScanViewsTests(TestCase):
         self.receipt_scan_requestdata = {
             'image': SimpleUploadedFile(
                 name='test_image.jpg',
-                content=open('./api_docs/example_input_receipts/receipt1.jpg', 'rb').read(),
+                content=_minimal_jpeg_bytes(),
                 content_type='image/jpeg'
             )
         }
@@ -52,12 +60,12 @@ class ReceiptScanViewsTests(TestCase):
         self.assertEqual(response.data['id'], ReceiptScan.objects.get(id=response.data['id']).id)
     
     def test_receipt_scan_request_post_creates_a_scan_with_pending_status(self):
-        with patch('receipt_processor.tasks.process_receipt_task.delay'):
+        with patch('receipts.tasks.process_receipt_task.delay'):
             response = self.client.post(self.receipt_scan_request_url, self.receipt_scan_requestdata)
         
         self.assertEqual(ReceiptScan.objects.get(id=response.data['id']).status, 'pending')
 
     def test_receipt_scan_request_post_calls_the_process_receipt_task(self):
-        with patch('receipt_processor.tasks.process_receipt_task.delay') as mock_process_receipt_task:
+        with patch('receipts.tasks.process_receipt_task.delay') as mock_process_receipt_task:
             self.client.post(self.receipt_scan_request_url, self.receipt_scan_requestdata)
             mock_process_receipt_task.assert_called_once()
