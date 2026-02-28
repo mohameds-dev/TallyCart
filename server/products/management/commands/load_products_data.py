@@ -32,12 +32,12 @@ class Command(BaseCommand):
             reader = csv.DictReader(file)
             for row_index, row_data in enumerate(reader, start=2):
                 try:
-                    self._process_row(row_data)
+                    self.process_row(row_data)
                     self.stdout.write(f'Processed row {row_index}.')
                 except Exception as e:
                     self.stderr.write(f'Skipped row {row_index}: {e}')
 
-    def _process_row(self, row):
+    def process_row(self, row):
         """Process a single CSV row."""
         row['source'] = 'CSV input'
         serializer = CSVRowSerializer(data=row)
