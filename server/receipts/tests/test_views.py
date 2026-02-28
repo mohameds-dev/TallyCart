@@ -28,8 +28,12 @@ class ReceiptScanViewsTests(TestCase):
                 content_type='image/jpeg'
             )
         }
+        self._task_patch = patch('receipts.tasks.process_receipt_task.delay')
+        self._mock_delay = self._task_patch.start()
+        self._mock_delay.reset_mock()
 
     def tearDown(self):
+        self._task_patch.stop()
         self.remove_images_created_in_tests()
     
     def remove_images_created_in_tests(self):
@@ -60,12 +64,9 @@ class ReceiptScanViewsTests(TestCase):
         self.assertEqual(response.data['id'], ReceiptScan.objects.get(id=response.data['id']).id)
     
     def test_receipt_scan_request_post_creates_a_scan_with_pending_status(self):
-        with patch('receipts.tasks.process_receipt_task.delay'):
-            response = self.client.post(self.receipt_scan_request_url, self.receipt_scan_requestdata)
-        
+        response = self.client.post(self.receipt_scan_request_url, self.receipt_scan_requestdata)
         self.assertEqual(ReceiptScan.objects.get(id=response.data['id']).status, 'pending')
 
     def test_receipt_scan_request_post_calls_the_process_receipt_task(self):
-        with patch('receipts.tasks.process_receipt_task.delay') as mock_process_receipt_task:
-            self.client.post(self.receipt_scan_request_url, self.receipt_scan_requestdata)
-            mock_process_receipt_task.assert_called_once()
+        self.client.post(self.receipt_scan_request_url, self.receipt_scan_requestdata)
+        self._mock_delay.assert_called_once()
