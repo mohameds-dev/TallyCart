@@ -1,4 +1,4 @@
-def get_llm_response(prompt: str) -> str:
+def get_llm_response(prompt):
     """
     Get the response from the LLM.
     """
