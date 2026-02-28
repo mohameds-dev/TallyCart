@@ -6,13 +6,6 @@ from .models import ReceiptScan
 from .tasks import process_receipt_task
 
 class ReceiptScanView(APIView):
-    def post(self, request, *args, **kwargs):
-        serializer = ReceiptScanSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
     def get(self, request, *args, **kwargs):
         scan_id = kwargs.get('scan_id')
         if scan_id is None:
