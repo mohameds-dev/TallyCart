@@ -33,6 +33,8 @@ jobs:
 
       - name: Run tests with coverage
         working-directory: ./server
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
           python -m coverage run --source='.' manage.py test --verbosity=2
           python -m coverage report --show-missing --fail-under=90
