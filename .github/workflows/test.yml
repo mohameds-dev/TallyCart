@@ -35,5 +35,5 @@ jobs:
         working-directory: ./server
         run: |
           python -m coverage run --source='.' manage.py test --verbosity=2
-          python -m coverage report --show-missing
+          python -m coverage report --show-missing --fail-under=90
           python -m coverage html
