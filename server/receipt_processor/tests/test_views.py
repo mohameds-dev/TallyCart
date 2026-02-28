@@ -52,7 +52,8 @@ class ReceiptScanViewsTests(TestCase):
         self.assertEqual(response.data['id'], ReceiptScan.objects.get(id=response.data['id']).id)
     
     def test_receipt_scan_request_post_creates_a_scan_with_pending_status(self):
-        response = self.client.post(self.receipt_scan_request_url, self.receipt_scan_requestdata)
+        with patch('receipt_processor.tasks.process_receipt_task.delay'):
+            response = self.client.post(self.receipt_scan_request_url, self.receipt_scan_requestdata)
         
         self.assertEqual(ReceiptScan.objects.get(id=response.data['id']).status, 'pending')
 
