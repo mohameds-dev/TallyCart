@@ -1,5 +1,5 @@
 from unittest import TestCase
-from utils.json_accuracy_evaluator import evaluate_accuracy
+from receipts.utils.json_accuracy_evaluator import evaluate_accuracy
 
 class TestJsonAccuracyEvaluator(TestCase):
     def test_evaluate_accuracy_takes_two_empty_dicts_and_returns_100(self):
